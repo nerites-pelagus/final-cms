@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+model AboutUs {
+  id           Int      @id @default(autoincrement())
+  company_name String
+  email        String?
+  phone        String?
+  address      String?
+  description  String?
+  logo_url     String?
+  updated_at   DateTime @updatedAt
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  content     String
+  slug        String   @unique
+  thumbnail   String?
+  language    String   @default("vi")
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  isVisible   Boolean  @default(true)
+  isPromotion Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id     Int    @id @default(autoincrement())
+  name   String
+  slug   String @unique
+  posts  Post[]
+}
