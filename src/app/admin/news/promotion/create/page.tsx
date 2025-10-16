@@ -35,7 +35,7 @@ export default function CreatePromotionNews() {
         <div className="bg-white rounded-xl shadow-md">
           <div className="p-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 pb-4 border-b">
-              Tạo tin khuyến mãi mới
+              Tạo tin tức sự kiện mới
             </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

@@ -10,28 +10,38 @@ export default function EditAccount() {
 
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Editor");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isLastAdmin, setIsLastAdmin] = useState(false);
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true);
       const res = await fetch("/api/accounts");
       const data = await res.json();
       const user = data.find((u: any) => u.id === id);
+
+      const adminCount = data.filter((u: any) => u.role === "Admin").length;
+
       if (user) {
         setEmail(user.email);
         setRole(user.role);
+        if (user.role === "Admin" && adminCount === 1) {
+          setIsLastAdmin(true);
+        }
       }
       setLoading(false);
     };
-    load();
+    if (id) load();
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const body = { id, email, role, ...(password && { password }) };
     const res = await fetch("/api/accounts", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, email, role }),
+      body: JSON.stringify(body),
     });
     if (res.ok) {
       router.push("/admin/accounts");
@@ -40,12 +50,16 @@ export default function EditAccount() {
     }
   };
 
+  const handleResetPassword = () => {
+    setPassword("123456");
+  };
+
   if (loading) return <p className="p-6">Đang tải...</p>;
 
   return (
     <div className="p-6 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        ✏️ Sửa tài khoản
+        Sửa tài khoản
       </h1>
 
       <form
@@ -65,16 +79,44 @@ export default function EditAccount() {
 
         <div>
           <label className="block mb-1 font-medium text-gray-700">
+            Mật khẩu mới (để trống nếu không đổi)
+          </label>
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="••••••"
+            />
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              className="px-3 py-2 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 transition whitespace-nowrap"
+            >
+              Cấp lại MK
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium text-gray-700">
             Vai trò
           </label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            disabled={isLastAdmin}
           >
             <option value="Admin">Admin</option>
             <option value="Editor">Editor</option>
           </select>
+          {isLastAdmin && (
+            <p className="text-sm text-red-600 mt-1">
+              Không thể thay đổi vai trò của tài khoản Admin cuối cùng.
+            </p>
+          )}
         </div>
 
         <div className="flex justify-end space-x-2">

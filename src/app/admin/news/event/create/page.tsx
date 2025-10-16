@@ -1,54 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function EditEventNews() {
+export default function CreateEventNews() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
-
-  useEffect(() => {
-    if (id) {
-      const fetchPost = async () => {
-        try {
-          const res = await fetch(`/api/news/${id}`);
-          if (!res.ok) throw new Error("Failed to fetch post");
-          const data = await res.json();
-          setTitle(data.title);
-          setDescription(data.description);
-          setContent(data.content);
-          setIsVisible(data.isVisible);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchPost();
-    }
-  }, [id]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsSubmitting(true);
-    await fetch(`/api/news/${id}`, {
-      method: "PUT",
+    await fetch("/api/news", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, content, isVisible }),
+      body: JSON.stringify({
+        title,
+        description,
+        content,
+        category: "event",
+        isVisible,
+      }),
     });
     setIsSubmitting(false);
     router.push("/admin/news/event");
-  }
-
-  if (isLoading) {
-    return <div className="p-8 text-center">Đang tải dữ liệu...</div>;
   }
 
   return (
@@ -57,7 +35,7 @@ export default function EditEventNews() {
         <div className="bg-white rounded-xl shadow-md">
           <div className="p-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 pb-4 border-b">
-              Chỉnh sửa tin tức sự kiện
+              Tạo tin tức sự kiện mới
             </h1>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -67,7 +45,7 @@ export default function EditEventNews() {
 
               <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Mô tả ngắn</label>
-                <textarea id="description" placeholder="Mô tả ngắn gọn về nội dung bài viết" className="w-full border-gray-300 rounded-lg shadow-sm p-3 h-24 focus:ring-blue-500 focus:border-blue-500 transition" value={description} onChange={(e) => setDescription(e.target.value)} />
+                <textarea id="description" placeholder="Mô tả ngắn gọn về nội dung bài viết" className="w-full border-gray-300 rounded-lg shadow-sm p-3 h-24 focus:ring-indigo-500 focus:border-indigo-500 transition" value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
 
               <div>
@@ -81,13 +59,14 @@ export default function EditEventNews() {
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="isVisible" className="font-medium text-gray-700">Hiển thị bài viết</label>
+                  <p className="text-gray-500">Bỏ chọn để ẩn bài viết khỏi trang web.</p>
                 </div>
               </div>
 
               <div className="flex justify-end space-x-4 pt-4 border-t">
                 <button type="button" onClick={() => router.back()} className="px-6 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Hủy</button>
                 <button type="submit" disabled={isSubmitting} className="px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition">
-                  {isSubmitting ? 'Đang cập nhật...' : 'Cập nhật'}
+                  {isSubmitting ? 'Đang lưu...' : 'Lưu bài viết'}
                 </button>
               </div>
             </form>

@@ -62,7 +62,6 @@ export default function MediaManagement() {
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">📷 Quản trị Images</h1>
 
-      {/* Upload form */}
       <form
         onSubmit={handleUpload}
         className="mb-8 bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-6"
@@ -84,7 +83,6 @@ export default function MediaManagement() {
         </button>
       </form>
 
-      {/* Gallery */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
         {images.map((img) => (
           <div
@@ -108,7 +106,6 @@ export default function MediaManagement() {
         ))}
       </div>
 
-      {/* Preview Modal */}
       {preview && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="relative bg-white p-4 rounded-lg shadow-xl max-w-3xl w-full">

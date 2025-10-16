@@ -30,7 +30,6 @@ export default function LoginPage() {
           CMS
         </h1>
 
-        {/* Email */}
         <input
           type="email"
           placeholder="Email"
@@ -39,7 +38,6 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Mật khẩu"
@@ -48,7 +46,6 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {/* Button */}
         <button
           type="submit"
           className="bg-[#006400] hover:bg-[#228B22] text-white w-full py-3 rounded-lg font-semibold shadow-md transition"

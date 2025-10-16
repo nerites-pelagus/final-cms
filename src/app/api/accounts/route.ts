@@ -4,42 +4,63 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-// GET all
 export async function GET() {
-  const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" } });
+  const users = await prisma.user.findMany({ orderBy: { id: "asc" } });
   return NextResponse.json(users);
 }
 
-// POST create
 export async function POST(req: Request) {
-  const { email, password, role } = await req.json();
+  try {
+    const { email, password, role } = await req.json();
 
-  const hashed = await bcrypt.hash(password, 10);
+    // Tìm user có id lớn nhất
+    const lastUser = await prisma.user.findFirst({
+      orderBy: {
+        id: "desc",
+      },
+    });
 
-  const newUser = await prisma.user.create({
-    data: { email, password: hashed, role },
-  });
+    const nextId = lastUser ? lastUser.id + 1 : 1;
 
-  return NextResponse.json(newUser);
+    const hashed = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: { id: nextId, email, password: hashed, role },
+    });
+
+    return NextResponse.json(newUser, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create account:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }
 
-// PUT update
 export async function PUT(req: Request) {
-  const { id, email, role } = await req.json();
+  const { id, email, role, password } = await req.json();
+
+  let dataToUpdate: { email: string; role: string; password?: string } = {
+    email,
+    role,
+  };
+
+  if (password) {
+    dataToUpdate.password = await bcrypt.hash(password, 10);
+  }
 
   const updated = await prisma.user.update({
     where: { id },
-    data: { email, role },
+    data: dataToUpdate,
   });
 
   return NextResponse.json(updated);
 }
 
-// DELETE
 export async function DELETE(req: Request) {
   const { id } = await req.json();
 
-  // check user role
   const user = await prisma.user.findUnique({ where: { id } });
   if (!user) return NextResponse.json({ error: "Không tìm thấy user" }, { status: 404 });
   if (user.role === "Admin") {

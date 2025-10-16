@@ -15,6 +15,8 @@ model User {
   createdAt DateTime @default(now())
 }
 
+
+// Model AboutUs
 model AboutUs {
   id           Int      @id @default(autoincrement())
   company_name String
@@ -26,6 +28,52 @@ model AboutUs {
   updated_at   DateTime @updatedAt
 }
 
+
+// Model FAQ
+model Faq {
+  id       Int    @id @default(autoincrement())
+  question String
+  answer   String
+}
+
+model FaqSetting {
+  id         Int     @id @default(1) 
+  custom_css String? @db.Text
+}
+
+
+// Model SocialLink
+model SocialLink {
+  platform String @id
+  url      String
+}
+
+
+// Model GoogleMapSetting
+model GoogleMapSetting {
+  id         Int    @id @default(1)
+  embed_code String @db.Text       
+}
+
+
+// Model AnalyticsSetting
+model AnalyticsSetting {
+  id            Int    @id @default(1)
+  tracking_code String @db.Text 
+}
+
+
+// Model Media
+model Media {
+  id        Int      @id @default(autoincrement())
+  url       String 
+  type      String   
+  filename  String   
+  createdAt DateTime @default(now())
+}
+
+
+// Model Contact
 model Contact {
   id        Int      @id @default(autoincrement())
   name      String

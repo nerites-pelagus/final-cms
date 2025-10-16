@@ -38,6 +38,8 @@ export default function AccountList() {
       setUsers(users.filter((u) => u.id !== id));
     } else {
       alert("Xóa thất bại");
+      const errorData = await res.json();
+      alert(`Xóa thất bại: ${errorData.error || "Lỗi không xác định"}`);
     }
   };
 
@@ -51,13 +53,13 @@ export default function AccountList() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">
-          👤 Quản trị tài khoản
+          Quản trị tài khoản
         </h1>
         <Link
           href="/admin/accounts/create"
           className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow hover:scale-105 transition"
         >
-          + Tạo tài khoản
+          Tạo tài khoản
         </Link>
       </div>
 
@@ -105,7 +107,7 @@ export default function AccountList() {
                   </Link>
                   <button
                     onClick={() => handleDelete(u.id, u.role)}
-                    disabled={u.role === "Admin"} // ✅ nếu là Admin thì disable
+                    disabled={u.role === "Admin"} 
                     className={`px-3 py-1 text-sm rounded-lg shadow transition ${
                       u.role === "Admin"
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
