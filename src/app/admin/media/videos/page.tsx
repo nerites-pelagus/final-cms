@@ -14,6 +14,7 @@ export default function MediaManagement() {
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [zoomedVid, setZoomedVid] = useState<string | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -23,7 +24,7 @@ export default function MediaManagement() {
         URL.revokeObjectURL(preview);
       }
     };
-  }, []); 
+  }, []);
 
   async function fetchVideos() {
     try {
@@ -41,7 +42,7 @@ export default function MediaManagement() {
     e.preventDefault();
     if (!file) return;
 
-    setIsUploading(true); 
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", "video");
@@ -60,7 +61,7 @@ export default function MediaManagement() {
       console.error(error);
       alert("Lỗi: Không thể tải video lên.");
     } finally {
-      setIsUploading(false); 
+      setIsUploading(false);
     }
   }
 
@@ -95,18 +96,18 @@ export default function MediaManagement() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">🎥 Quản trị Videos</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Quản trị Videos</h1>
 
       <form
         onSubmit={handleUpload}
         className="mb-8 bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-6"
       >
         <input
-          ref={fileInputRef} 
+          ref={fileInputRef}
           type="file"
           accept="video/*"
           onChange={handleFileChange}
-          disabled={isUploading} 
+          disabled={isUploading}
           className="text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg 
                      file:border-0 file:text-sm file:font-semibold 
                      file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer disabled:opacity-50"
@@ -114,7 +115,7 @@ export default function MediaManagement() {
 
         <button
           type="submit"
-          disabled={isUploading || !file} 
+          disabled={isUploading || !file}
           className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
         >
           {isUploading ? "Đang tải lên..." : "Upload"}
@@ -126,6 +127,7 @@ export default function MediaManagement() {
           <div
             key={vid.id}
             className="relative group rounded-xl overflow-hidden shadow-lg bg-white"
+            onClick={() => setZoomedVid(vid.url)}
           >
             <video
               src={vid.url}
@@ -144,6 +146,31 @@ export default function MediaManagement() {
           </div>
         ))}
       </div>
+
+      {zoomedVid && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setZoomedVid(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full p-4"
+            onClick={(e) => e.stopPropagation()} // tránh đóng khi click vào video
+          >
+            <video
+              src={zoomedVid}
+              controls
+              autoPlay
+              className="w-full h-auto rounded-xl shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+            />
+            <button
+              onClick={() => setZoomedVid(null)}
+              className="absolute top-4 right-6 text-white text-2xl font-bold hover:text-gray-300"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {preview && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">

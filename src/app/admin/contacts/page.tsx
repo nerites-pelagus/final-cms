@@ -21,7 +21,7 @@ export default function ContactManagement() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">📩 Danh sách yêu cầu liên hệ</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Danh sách yêu cầu liên hệ</h1>
 
       <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200">
         <table className="min-w-full bg-white">

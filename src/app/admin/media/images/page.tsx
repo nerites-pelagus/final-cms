@@ -12,6 +12,7 @@ export default function MediaManagement() {
   const [images, setImages] = useState<MediaItem[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [zoomedImg, setZoomedImg] = useState<string | null>(null); 
 
   useEffect(() => {
     fetchImages();
@@ -60,7 +61,9 @@ export default function MediaManagement() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">📷 Quản trị Images</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">
+        Quản trị Images
+      </h1>
 
       <form
         onSubmit={handleUpload}
@@ -82,12 +85,12 @@ export default function MediaManagement() {
           Upload
         </button>
       </form>
-
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
         {images.map((img) => (
           <div
             key={img.id}
-            className="relative group rounded-xl overflow-hidden shadow-lg bg-white"
+            className="relative group rounded-xl overflow-hidden shadow-lg bg-white cursor-pointer"
+            onClick={() => setZoomedImg(img.url)} 
           >
             <img
               src={img.url}
@@ -96,7 +99,10 @@ export default function MediaManagement() {
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
               <button
-                onClick={() => handleDelete(img.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(img.id);
+                }}
                 className="bg-red-600 text-white text-sm px-3 py-1 rounded-lg shadow hover:bg-red-700 transition"
               >
                 Xóa
@@ -106,6 +112,29 @@ export default function MediaManagement() {
         ))}
       </div>
 
+      {/* ✅ Popup xem ảnh lớn */}
+      {zoomedImg && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setZoomedImg(null)} // click nền để đóng
+        >
+          <div className="relative max-w-4xl w-full p-4">
+            <img
+              src={zoomedImg}
+              alt="zoomed"
+              className="w-full h-auto rounded-xl shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+            />
+            <button
+              onClick={() => setZoomedImg(null)}
+              className="absolute top-4 right-6 text-white text-2xl font-bold hover:text-gray-300"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Preview ảnh sắp upload */}
       {preview && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="relative bg-white p-4 rounded-lg shadow-xl max-w-3xl w-full">
